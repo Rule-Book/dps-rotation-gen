@@ -1,4 +1,4 @@
-ai evolution
+natural selection evolutionary algorithm
 
   calculating dps
 wiki
@@ -12,7 +12,22 @@ average of all 3
   spread on some passing of genes (pass a string of params used to generate a rotation, not pass a rotation)
 ability priority random weight m
 ability sequence chaining (chaining a certain ability 1-5 gcds after another certain one)
+# of hits
+special attack?
+damage
+ability duration in ticks
+cooldown in ticks
 
+select random abilities and place in 2d array until sum of total >= fightDuration
+create a 2d matrix with multipliers according to first array (needle in array[6] increases array[7] by .7%)
+create a matrix alongside abilities as theyre chosen with adren values
+
+find efficient way to generate real-complete dps rotations
+add ability to array1
+add adren to array2
+add multiplier operations to array3 if applicable
+add addition operations to array4 if applicable
+add status to array5
 
 
   mutated babies

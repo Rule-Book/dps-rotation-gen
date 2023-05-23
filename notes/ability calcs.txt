@@ -1,0 +1,11 @@
+name,skilltype,adren,damage,cooldown,duration,hits
+piercing shot,basic,9,90,3,0,2
+binding shot,basic,9,60,15,0,1
+needle strike,basic,9,94.2,5.4,0,1
+fragmentation shot,basic,9,120.6,15,0,5
+snipe,basic,9,172,10.2,2.4,1
+greater ricochet,basic,9,160,10.2,0,7
+rapid fire,threshold,-15,451.2,20.4,4.8,8
+snap shot,threshold,-15,265,20.4,0,2
+bombardment,threshold,-15,131.4,30,0,1
+death's swiftness,ultimate,90,0,315
