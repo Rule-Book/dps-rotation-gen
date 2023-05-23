@@ -9,4 +9,4 @@ rapid fire,threshold,-15,451.2,20.4,4.8,8
 snap shot,threshold,-15,265,20.4,1.8,2
 bombardment,threshold,-15,131.4,30,1.8,1
 tight bindings,threshold,-15,120,15,1.8,1
-death's swiftness,ultimate,90,1.8,315
+death's swiftness,ultimate,65,1.8,315
