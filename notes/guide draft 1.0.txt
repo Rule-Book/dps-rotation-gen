@@ -32,3 +32,17 @@ add status to array5
 
   mutated babies
   heat for 10,000 generations
+
+
+connections to create an efficient way to generate offspring from parents and retaining their best traits of dps
+
+desirable dps rotation characteristics
+relative order of abilities within whole array (weight) should anchor deaths swiftness to start
+relative sequence of abilities after one another (weight) should anchor needle strike to sgb
+add a 1.2*standard weight to pick the same abilities and same order as parent
+
+
+
+
+possible ways to evaluate in a matrix operation?
+
