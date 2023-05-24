@@ -16,12 +16,12 @@ abilities = [
 	['Snap Shot', 'threshold', -15, 265, 20.4, 1.8, 2],
 	['Bombardment', 'threshold', -15, 131.4, 30, 1.8, 1],
 	['Tight Bindings', 'threshold', -15, 120, 15, 1.8, 1],
-	["Death's Swiftness", 'ultimate', 65, 1.8, 315]
+	["Death's Swiftness", 'ultimate', 65, 1.8, 315, 1.8, 1]
 ]
 abilityWeights = [0 for q in range(numAbilities)]
 population = [[0 for q in range(fightDuration+1)] for r in range(numPopulation)] # [i][0] # reserved for total dps, [i][1-fightDuration] reserved for abilities
 parents = [[0 for _ in range(fightDuration+1)] for _ in range(numParents)]
-
+best = [0 for _ in range(fightDuration+1)]
 #set total dps to -1 to make debugging easier
 for z in population:
 	z[0] = -1
@@ -35,10 +35,16 @@ def rankPopulation():
 def sortRank(child):
     return child[0] # total dps
 
-def assignParents():
+def assignParents(best):
     population.sort(key=sortRank)
+    population.reverse()
     for i in range(0,numParents):
         parents[i] = population[i]
+    print(parents[0])
+    print(parents[len(parents)-1])
+    if (parents[0][0] > best[0]):
+        print('new best ' + str(parents[0][0]))
+        best = parents[0].copy()
 
 def generatePopulation(_parents):
     for i in range(0, numPopulation):
@@ -50,7 +56,6 @@ def generatePopulation(_parents):
             #   relativeOrderWeight = 5 
             attempts = 20
             for k in range(0,attempts):
-                print('attempt ' +str(k))
                 abil = random.random() * numAbilities + staticOrderweight
                 if abil > numAbilities:
                     abil = parent[j]
@@ -59,15 +64,13 @@ def generatePopulation(_parents):
                 if not haveAdrenFor(abil, adrenaline):
                     continue
                 else:
-                    print('set ij to ' +str(abil))
                     population[i][j] = abil
                     break
 
 def haveAdrenFor(abilityInd, adren):
-    abilityType = abilities[abilityInd][2]
-    if (abilityType == 'threshold' and adren >= 50) or (abilityType == 'ultimate' and adren >= 100):
+    abilityType = abilities[abilityInd][1]
+    if (abilityType == 'basic') or (abilityType == 'threshold' and adren >= 50) or (abilityType == 'ultimate' and adren >= 100):
         return True
-    print('no adren')
     return False
 
 def calculateDps():
@@ -75,15 +78,15 @@ def calculateDps():
         if i in parents and i[0] <= 0:
             continue
         calculateDamageWithModifiers(i)
-        children[i][0] = sumDamages()
+        #children[i][0] = sumDamages()
 
 def sumDamages(damageArray):
     sum = 0
     for num in range(0,fightDuration):
         #print('base damage of abilities[' + str(num) + '] is ' + str(abilities[damageArray[num]][3]))
-        print('damage of ind ' + str(num) + ' = ' + str(damageArray[num+1]))
+        #print('damage of ind ' + str(num) + ' = ' + str(damageArray[num+1]))
         sum += damageArray[num+1]
-    print('sum = ' + str(sum))
+    #print('sum = ' + str(sum))
     return sum
 
 def calculateDamageWithModifiers(rotation):
@@ -95,7 +98,7 @@ def calculateDamageWithModifiers(rotation):
     for j in range(0, len(rotation)):
         if j == 0:
             continue
-        print('j is ' + str(j))
+        #print('j is ' + str(j))
         #print('base damage of abilities[' + str(j) + '] is ' + str(abilities[rotation[j]][3]))
         baseDamage = damage = abilities[rotation[j]][3]
         if inSwiftness:
@@ -121,15 +124,23 @@ def calculateDamageWithModifiers(rotation):
 
 #child1 =[0, 4, 5, 2, 4, 9, 2, 10, 3, 4, 2, 7, 2, 1, 1, 3, 7, 6, 8, 8, 2, 0, 4]
 
-for gen in range(0, 1):
+def translatePrintToNames(child):
+    output = child.copy()
+    for i in range(0,len(child)):
+        if i == 0:
+            continue
+        output[i] = abilities[int(child[i])][0]
+    #print(output)
+
+for gen in range(0, generations):
     print('generation ' + str(gen))
     generatePopulation(parents)
 
     rankPopulation()
 
-    assignParents()
-    for parent in population:
-        print(parent)
+    assignParents(best)
+    for parent in parents:
+        translatePrintToNames(parent)
 
 # for 
 # 	for j

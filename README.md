@@ -11,3 +11,7 @@ rank population
 select parents
 *mutate parents for children*
 replace population with children (inclusive?)
+
+issues:
+add cooldown logic when selecting abilities
+fix tracking Best rotations
