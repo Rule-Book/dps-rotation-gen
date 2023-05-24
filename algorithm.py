@@ -78,40 +78,45 @@ def calculateDps():
 		children[i][0] = sumDamages()
 
 def sumDamages(damageArray):
-	sum = 0
-	for num in range(0,fightDuration):
-		sum += damageArray[num+1]
-	return sum
+    sum = 0
+    for num in range(0,fightDuration):
+        #print('base damage of abilities[' + str(num) + '] is ' + str(abilities[damageArray[num]][3]))
+        print('damage of ind ' + str(num) + ' = ' + str(damageArray[num+1]))
+        sum += damageArray[num+1]
+    print('sum = ' + str(sum))
+    return sum
 
 def calculateDamageWithModifiers(rotation):
-	inSwiftness = False # increase damage of abils preceded by deaths switfness within past 38.4s
-	bound = False # increase piercing shot damage by 30% if binding shot is within past 9.6s
-	unBoundTime = -1 # increase ability-damage of abils preceded by needle strike by 7%
-	currentTime = 0
-	damageByAbilityIndex = [0 for _ in rotation]
-	for j in rotation:
-		if j == 0:
-			continue
+    inSwiftness = False # increase damage of abils preceded by deaths switfness within past 38.4s
+    bound = False # increase piercing shot damage by 30% if binding shot is within past 9.6s
+    unBoundTime = -1 # increase ability-damage of abils preceded by needle strike by 7%
+    currentTime = 0
+    damageByAbilityIndex = [0 for _ in rotation]
+    for j in range(0, len(rotation)):
+        if j == 0:
+            continue
+        print('j is ' + str(j))
+        #print('base damage of abilities[' + str(j) + '] is ' + str(abilities[rotation[j]][3]))
+        baseDamage = damage = abilities[rotation[j]][3]
+        if inSwiftness:
+            damage *= 1.5
+        elif abilities[rotation[j]][0] == "Death's Swiftness":
+            inSwiftness=True
+        if abilities[rotation[j]][0] == 'Binding Shot' or 'Tight Bindings':
+            bound = True
+        elif abilities[rotation[j]][0] == 'Piercing Shot':
+            if bound and currentTime < unBoundTime:
+                damage *= 1.3
+            else:
+                bound = False
+        if abilities[rotation[j]-1][0] == 'Needle Strike':
+            damage += baseDamage * 0.07
+        damageByAbilityIndex[j] = damage
+        currentTime += abilities[rotation[j]][5]
+    rotation[0] = sumDamages(damageByAbilityIndex)
+    return damageByAbilityIndex
 
-		baseDamage = damage = abilities[rotation[j], 3]
+child1 = [0 for _ in range(0,fightDuration+1)]
+print(calculateDamageWithModifiers(child1))
 
-		if inSwiftness:
-			damage *= 1.5
-		elif abilities[j][0] == "Death's Swiftness":
-			inSwiftness=True
-
-		if abilities[j][0] == 'Binding Shot' or 'Tight Bindings':
-			bound = True
-		elif abilities[j][0] == 'Piercing Shot':
-			if bound and currentTime < unBoundTime:
-				damage *= 1.3
-			else:
-				bound = False
-
-		if abilities[j-1][0] == 'Needle Strike':
-			damage += baseDamage * 0.07
-
-		damageByAbilityIndex[j] = damage
-		currentTime += abilities[j][5]
-
-	rotation[0] = sumDamages(damageByAbilityIndex)
+child1 =[0, 4, 5, 2, 4, 9, 2, 10, 3, 4, 2, 7, 2, 1, 1, 3, 7, 6, 8, 8, 2, 0, 4]

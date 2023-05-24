@@ -9,7 +9,7 @@ rapid fire,threshold,-15,451.2,20.4,4.8,8
 snap shot,threshold,-15,265,20.4,1.8,2
 bombardment,threshold,-15,131.4,30,1.8,1
 tight bindings,threshold,-15,120,15,1.8,1
-death's swiftness,ultimate,65,1.8,315
+death's swiftness,ultimate,65,1.8,315,1.8,1
 
 [
 	['Piercing Shot', 'basic', 9, 90, 3, 1.8, 2],
@@ -22,5 +22,5 @@ death's swiftness,ultimate,65,1.8,315
 	['Snap Shot', 'threshold', -15, 265, 20.4, 1.8, 2],
 	['Bombardment', 'threshold', -15, 131.4, 30, 1.8, 1],
 	['Tight Bindings', 'threshold', -15, 120, 15, 1.8, 1],
-	["Death's Swiftness", 'ultimate', 65, 1.8, 315]
+	["Death's Swiftness", 'ultimate', 65, 1.8, 315, 1.8, 1]
 ]
