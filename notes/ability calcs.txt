@@ -10,3 +10,17 @@ snap shot,threshold,-15,265,20.4,1.8,2
 bombardment,threshold,-15,131.4,30,1.8,1
 tight bindings,threshold,-15,120,15,1.8,1
 death's swiftness,ultimate,65,1.8,315
+
+[
+	['Piercing Shot', 'basic', 9, 90, 3, 1.8, 2],
+	['Binding Shot', 'basic', 9, 60, 15, 1.8, 1],
+	['Needle Strike', 'basic', 9, 94.2, 5.4, 1.8, 1],
+	['Fragmentation Shot', 'basic', 9, 120.6, 15, 1.8, 5],
+	['Snipe', 'basic', 9, 172, 10.2, 2.4, 1],
+	['Greater Ricochet', 'basic', 9, 160, 10.2, 1.8, 7],
+	['Rapid Fire', 'threshold', -15, 451.2, 20.4, 4.8, 8],
+	['Snap Shot', 'threshold', -15, 265, 20.4, 1.8, 2],
+	['Bombardment', 'threshold', -15, 131.4, 30, 1.8, 1],
+	['Tight Bindings', 'threshold', -15, 120, 15, 1.8, 1],
+	["Death's Swiftness", 'ultimate', 65, 1.8, 315]
+]
