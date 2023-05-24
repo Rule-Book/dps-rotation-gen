@@ -1,11 +1,12 @@
 import random
-fightDuration = 22
-generations=10
+fightDuration = 23 # 21.33 GCDs 38s
+generations=200
 numParents = 5
 numPopulation = 30
 numAbilities = 11
 numAbilityAttributes = 7 # 0 name, 1 skilltype, 2 adren, 3 damage, 4 cooldown, 5 duration, 6 hits
 abilities = [
+
 	['Piercing Shot', 'basic', 9, 90, 3, 1.8, 2],
 	['Binding Shot', 'basic', 9, 60, 15, 1.8, 1],
 	['Needle Strike', 'basic', 9, 94.2, 5.4, 1.8, 1],
@@ -16,12 +17,14 @@ abilities = [
 	['Snap Shot', 'threshold', -15, 265, 20.4, 1.8, 2],
 	['Bombardment', 'threshold', -15, 131.4, 30, 1.8, 1],
 	['Tight Bindings', 'threshold', -15, 120, 15, 1.8, 1],
-	["Death's Swiftness", 'ultimate', 65, 1.8, 315, 1.8, 1]
+	["Death's Swiftness", 'ultimate', -65, 315, 120, 1.8, 1],
+    ["None", 'ultimate', 0, 0, 0, 0, 0]
 ]
-abilityWeights = [0 for q in range(numAbilities)]
-population = [[0 for q in range(fightDuration+1)] for r in range(numPopulation)] # [i][0] # reserved for total dps, [i][1-fightDuration] reserved for abilities
-parents = [[0 for _ in range(fightDuration+1)] for _ in range(numParents)]
-best = [0 for _ in range(fightDuration+1)]
+abilityWeights = [0 for _ in range(numAbilities)]
+population = [[0 for _ in range(fightDuration)] for _ in range(numPopulation)] # [i][0] # reserved for total dps, [i][1-fightDuration] reserved for abilities
+parents = [[0 for _ in range(fightDuration)] for _ in range(numParents)]
+parents[0] = [7272.642000000001, 10, 3, 4, 2, 6, 2, 4, 8, 0, 5, 2, 7, 4, 2, 9, 6, 5, 4, 6, 6, 6, 7]
+best = [-1 for _ in range(fightDuration)]
 #set total dps to -1 to make debugging easier
 for z in population:
 	z[0] = -1
@@ -35,43 +38,66 @@ def rankPopulation():
 def sortRank(child):
     return child[0] # total dps
 
-def assignParents(best):
+def resetPopulation(pop):
+    pop[:] = [[0 for _ in range(fightDuration)] for _ in range(numPopulation)]
+
+def assignParents():
     population.sort(key=sortRank)
     population.reverse()
-    for i in range(0,numParents):
-        parents[i] = population[i]
-    print(parents[0])
-    print(parents[len(parents)-1])
+    parents[:] = population[:len(parents)]
+    #print(parents[0])
+    #print(parents[len(parents)-1])
     if (parents[0][0] > best[0]):
         print('new best ' + str(parents[0][0]))
-        best = parents[0].copy()
+        best[:] = parents[0]
 
 def generatePopulation(_parents):
+    resetPopulation(population)
     for i in range(0, numPopulation):
         parent = _parents[int(i/int(numPopulation/numParents))] # distributes weights from parents to children at a rate of numParents:numPopulation
         adrenaline = 100
-        for j in range(1, fightDuration+1):
-            staticOrderweight = 4 # increases static order weight of parent's traits by weight/numAbilities
+        cooldowns = [-1 for _ in abilities]
+        time = 0
+        abil = 11
+        for j in range(1, fightDuration):
+            if time > 38:
+                #print('from ' + str(j) + ' rest will be 11')
+                population[i][j] = 11
+                #print('  ind#' + str(j) + ' ' + str(population[i]))
+                continue
+            staticOrderweight = 6 # increases static order weight of parent's traits by weight/numAbilities
             #if i > 0:
             #   relativeOrderWeight = 5 
-            attempts = 20
-            for k in range(0,attempts):
-                abil = random.random() * numAbilities + staticOrderweight
-                if abil > numAbilities:
+            attempts = 35
+            for _ in range(0,attempts):
+                abil = random.random() * (numAbilities + staticOrderweight * (1-(parent[j] == 11)))
+                if abil >= numAbilities:
                     abil = parent[j]
                 else:
                     abil = int(abil)
                 if not haveAdrenFor(abil, adrenaline):
                     continue
-                else:
+                elif time > cooldowns[abil]:
+                    if abil == 11 and parent[j] == 11:
+                        print('55555555555555555555555555555555555555555----------------------@@@@@@@@@@@@@@@@@@@@@@@33333')
+                    adrenaline = min(adrenaline + abilities[abil][2], 100)
                     population[i][j] = abil
+                    #print('  abil selected ' + str(abil) + ' ' + str(abilities[abil][0]))
+                    cooldowns[abil] = time + abilities[abil][4]
+                    time += abilities[abil][5]
                     break
+            #print('  cds-' + str(cooldowns))
+            #print('  ind#' + str(j) + ' ' + str(population[i]))
+        #print(' pop#' + str(i))
+
 
 def haveAdrenFor(abilityInd, adren):
     abilityType = abilities[abilityInd][1]
     if (abilityType == 'basic') or (abilityType == 'threshold' and adren >= 50) or (abilityType == 'ultimate' and adren >= 100):
         return True
     return False
+
+
 
 def calculateDps():
     for i in population:
@@ -82,10 +108,10 @@ def calculateDps():
 
 def sumDamages(damageArray):
     sum = 0
-    for num in range(0,fightDuration):
+    for num in range(1,fightDuration):
         #print('base damage of abilities[' + str(num) + '] is ' + str(abilities[damageArray[num]][3]))
         #print('damage of ind ' + str(num) + ' = ' + str(damageArray[num+1]))
-        sum += damageArray[num+1]
+        sum += damageArray[num]
     #print('sum = ' + str(sum))
     return sum
 
@@ -119,7 +145,7 @@ def calculateDamageWithModifiers(rotation):
     rotation[0] = sumDamages(damageByAbilityIndex)
     return damageByAbilityIndex
 
-#child1 = [0 for _ in range(0,fightDuration+1)]
+#child1 = [0 for _ in range(0,fightDuration)]
 #print(calculateDamageWithModifiers(child1))
 
 #child1 =[0, 4, 5, 2, 4, 9, 2, 10, 3, 4, 2, 7, 2, 1, 1, 3, 7, 6, 8, 8, 2, 0, 4]
@@ -130,7 +156,7 @@ def translatePrintToNames(child):
         if i == 0:
             continue
         output[i] = abilities[int(child[i])][0]
-    #print(output)
+    print(output)
 
 for gen in range(0, generations):
     print('generation ' + str(gen))
@@ -138,9 +164,12 @@ for gen in range(0, generations):
 
     rankPopulation()
 
-    assignParents(best)
-    for parent in parents:
-        translatePrintToNames(parent)
+    assignParents()
+
+    #for parent in parents:
+        #translatePrintToNames(parents[0])
+print(best)
+translatePrintToNames(best)
 
 # for 
 # 	for j
