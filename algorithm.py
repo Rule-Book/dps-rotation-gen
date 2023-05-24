@@ -1,3 +1,4 @@
+import random
 fightDuration = 22
 generations=10
 numParents = 5
@@ -18,8 +19,8 @@ abilities = [
 	["Death's Swiftness", 'ultimate', 65, 1.8, 315]
 ]
 abilityWeights = [0 for q in range(numAbilities)]
-population = [[0 for q in range(numPopulation)] for r in range(fightDuration+1)] # [i][0] # reserved for total dps, [i][1-fightDuration] reserved for abilities
-parents = [[0 for _ in range(numParents)] for _ in range(fightDuration+1)]
+population = [[0 for q in range(fightDuration+1)] for r in range(numPopulation)] # [i][0] # reserved for total dps, [i][1-fightDuration] reserved for abilities
+parents = [[0 for _ in range(fightDuration+1)] for _ in range(numParents)]
 
 #set total dps to -1 to make debugging easier
 for z in population:
@@ -28,54 +29,53 @@ for z in population:
 for z in parents:
 	z[0] = -1
 
-
-for gen in range(0, generations):
-	generatePopulation(parents)
-
-	rankPopulation(population)
-
-	selectParents(population)
-
-for i
-	for j
-		print(parents[i][j] + ', ')
-	println('')
-
 def rankPopulation():
-	calculateDps()
+    calculateDps()
+
+def sortRank(child):
+    return child[0] # total dps
+
+def assignParents():
+    population.sort(key=sortRank)
+    for i in range(0,numParents):
+        parents[i] = population[i]
 
 def generatePopulation(_parents):
-	for i in range(0, numPopulation)
-		parent = _parents[int(numParents/i)] # distributes weights from parents to children at a rate of numParents:numPopulation
-		adrenaline = 100
-		for j in range(1, fightDuration+1):
-			staticOrderweight = 4 # increases static order weight of parent's traits by weight/numAbilities
-			#if i > 0:
-			#	relativeOrderWeight = 5 
-			attempts = 20
-			for k in range(0,attempts):
-				abil = random.random() * numAbilities + staticOrderweight
-				if abil > numAbilities:
-					abil = parent[j]
-				abil = int(abil)
-				if not haveAdrenFor(abil, adrenaline):
-					continue
-				else:
-					population[i][j] = abil
-					break
+    for i in range(0, numPopulation):
+        parent = _parents[int(i/int(numPopulation/numParents))] # distributes weights from parents to children at a rate of numParents:numPopulation
+        adrenaline = 100
+        for j in range(1, fightDuration+1):
+            staticOrderweight = 4 # increases static order weight of parent's traits by weight/numAbilities
+            #if i > 0:
+            #   relativeOrderWeight = 5 
+            attempts = 20
+            for k in range(0,attempts):
+                print('attempt ' +str(k))
+                abil = random.random() * numAbilities + staticOrderweight
+                if abil > numAbilities:
+                    abil = parent[j]
+                else:
+                    abil = int(abil)
+                if not haveAdrenFor(abil, adrenaline):
+                    continue
+                else:
+                    print('set ij to ' +str(abil))
+                    population[i][j] = abil
+                    break
 
 def haveAdrenFor(abilityInd, adren):
-	abilityType = abilities[abilityInd][2]
-	if (abilityType = 'threshold' and adren >= 50) or (abilityType = 'ultimate' and adren >= 100):
-		return True
-	return False
+    abilityType = abilities[abilityInd][2]
+    if (abilityType == 'threshold' and adren >= 50) or (abilityType == 'ultimate' and adren >= 100):
+        return True
+    print('no adren')
+    return False
 
 def calculateDps():
-	for i in population
-		if i in parents and i[0] <= 0:
-			continue
-		calculateDamageWithModifiers(i)
-		children[i][0] = sumDamages()
+    for i in population:
+        if i in parents and i[0] <= 0:
+            continue
+        calculateDamageWithModifiers(i)
+        children[i][0] = sumDamages()
 
 def sumDamages(damageArray):
     sum = 0
@@ -116,7 +116,23 @@ def calculateDamageWithModifiers(rotation):
     rotation[0] = sumDamages(damageByAbilityIndex)
     return damageByAbilityIndex
 
-child1 = [0 for _ in range(0,fightDuration+1)]
-print(calculateDamageWithModifiers(child1))
+#child1 = [0 for _ in range(0,fightDuration+1)]
+#print(calculateDamageWithModifiers(child1))
 
-child1 =[0, 4, 5, 2, 4, 9, 2, 10, 3, 4, 2, 7, 2, 1, 1, 3, 7, 6, 8, 8, 2, 0, 4]
+#child1 =[0, 4, 5, 2, 4, 9, 2, 10, 3, 4, 2, 7, 2, 1, 1, 3, 7, 6, 8, 8, 2, 0, 4]
+
+for gen in range(0, 1):
+    print('generation ' + str(gen))
+    generatePopulation(parents)
+
+    rankPopulation()
+
+    assignParents()
+    for parent in population:
+        print(parent)
+
+# for 
+# 	for j
+# 		print(parents[i][j] + ', ')
+# 	println('')
+
