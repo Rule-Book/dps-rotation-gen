@@ -1,9 +1,9 @@
 import random
 fightDuration = 23 # 21.33 GCDs 38s
-generations=200
+generations=800
 numParents = 5
 numPopulation = 30
-numAbilities = 12
+numAbilities = 14
 noneAbilityInd = numAbilities
 
 abilities = [ # 0 name, 1 skilltype, 2 adren, 3 damage, 4 cooldown, 5 duration, 6 hits
@@ -13,12 +13,13 @@ abilities = [ # 0 name, 1 skilltype, 2 adren, 3 damage, 4 cooldown, 5 duration, 
     ['Corruption Shot', 'basic', 9, 200, 15, 1.8, 5],
 	['Needle Strike', 'basic', 9, 94.2, 5.4, 1.8, 1],
 	['Snipe', 'basic', 9, 172, 10.2, 2.4, 1],
-	['Greater Ricochet', 'basic', 9, 160, 10.2, 1.8, 7],
+	['Greater Ricochet', 'basic', 9, 160, 1, 1.8, 7],
 	['Rapid Fire', 'threshold', -15, 451.2, 20.4, 4.8, 8],
 	['Snap Shot', 'threshold', -15, 265, 20.4, 1.8, 2],
 	['Bombardment', 'threshold', -15, 131.4, 30, 1.8, 1],
 	['Tight Bindings', 'threshold', -15, 120, 15, 1.8, 1],
     ["Crystal Rain", 'special', -27, 433.25, 30, 1.8, 2.44],
+    ["Descent of Darkness", 'special', -59, 634, 1.2, 1.8, 2],
 	["Death's Swiftness", 'ultimate', -65, 315, 120, 1.8, 1],
     ["None", 'ultimate', 0, 0, 0, 0, 0]
 ]
@@ -85,7 +86,7 @@ def haveAdrenFor(abilityInd, adren):
     abilityType = abilities[abilityInd][1]
     if (abilityType == 'basic') or (abilityType == 'threshold' and adren >= 50) or (abilityType == 'ultimate' and adren >= 100):
         return True
-    elif (abilityType == 'special' and adren >= abilities[abilityInd][2]):
+    elif (abilityType == 'special' and adren >= abs(abilities[abilityInd][2])):
         return True
     return False
 
@@ -93,15 +94,11 @@ def haveAdrenFor(abilityInd, adren):
 
 def calculateDps():
     for i in population:
-        if i in parents and i[0] <= 0:
-            continue
-        calculateDamageWithModifiers(i)
+        if i not in parents or i[0] > 0:
+            calculateDamageWithModifiers(i)
 
 def sumDamages(damageArray):
-    sum = 0
-    for num in range(1,fightDuration):
-        sum += damageArray[num]
-    return sum
+    return sum(num for num in damageArray)
 
 def calculateDamageWithModifiers(rotation):
     inSwiftness = False # increase damage of abils preceded by deaths switfness within past 38.4s
@@ -111,7 +108,7 @@ def calculateDamageWithModifiers(rotation):
     damageByAbilityIndex = [0 for _ in rotation]
     for j in range(1, len(rotation)):
         baseDamage = damage = abilities[rotation[j]][3]
-        if inSwiftness:
+        if inSwiftness and abilities[rotation[j]][0] != 'Corruption Shot' and abilities[rotation[j]][0] != 'Fragmentation Shot':
             damage *= 1.5
         elif abilities[rotation[j]][0] == "Death's Swiftness":
             inSwiftness=True

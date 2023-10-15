@@ -28,4 +28,6 @@ increases flat damage of multihitting abilities (ecb before sgb bleeds grico)
 
 weigh ratio of proximity to damage increase relationship of each ability and store them in a matrix that updates slightly with each generation based on top 5 parents?
 
-drive 9
+promote good adrenaline usage, storing adren outside of buffs and dumping adren during buffs
+
+fitness function that also mutates based on relative increase of parents from generation to generation?
